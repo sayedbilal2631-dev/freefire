@@ -1,22 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Box,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    CircularProgress,
-    Alert,
-    Container,
-} from '@mui/material';
-
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Alert, Container, } from '@mui/material';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import React, { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../firebase';
 
 const ShowData = () => {
     const [rows, setRows] = useState([]);
@@ -28,13 +14,11 @@ const ShowData = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
-            console.log('Firebase current user:', user);
         });
 
         return () => unsubscribe();
     }, []);
 
-    console.log(currentUser);
 
     // Fetch Firestore data
     useEffect(() => {

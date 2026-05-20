@@ -16,7 +16,7 @@ const Hero = () => {
         backgroundPosition: 'center',
         overflow: 'hidden',
         pt: { xs: 12, md: 0 },
-        mt: { xs: 0, md: 8 }
+        // mt: { xs: 0, md: 8 }
       }}
     >
       {/* Decorative Blur Orbs */}

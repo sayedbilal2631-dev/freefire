@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -45,7 +46,7 @@ const Navbar = () => {
   return (
     <>
       <AppBar
-        position="fixed"
+
         sx={{
           background: scrolled
             ? `linear-gradient(90deg, ${theme.palette.primary.main}10 0%, ${theme.palette.secondary.main}08 100%)`
@@ -54,6 +55,7 @@ const Navbar = () => {
           boxShadow: scrolled ? '0 6px 30px rgba(0, 0, 0, 0.55)' : 'none',
           transition: 'all 0.3s ease-in-out',
           borderBottom: scrolled ? `1px solid ${theme.palette.primary.main}22` : 'none',
+          position: scrolled ? 'fixed' : 'static'
         }}
       >
         <Container maxWidth="lg">
@@ -62,7 +64,7 @@ const Navbar = () => {
               justifyContent: "space-between",
               py: scrolled ? 1 : 2,
               transition: "all 0.3s",
-              alignItems:'center'
+              alignItems: 'center'
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -120,14 +122,11 @@ const Navbar = () => {
                     {link.title}
                   </Typography>
                 ))}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ ml: 2, borderRadius: "50px", px: 4, fontWeight: 700 }}
-                  className="btn-neon"
-                >
-                  Join Event
-                </Button>
+                {/* Join Event button removed per request */}
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Button component={Link} to="/signin" color="inherit">Sign In</Button>
+                  <Button component={Link} to="/signup" variant="contained" color="primary">Sign Up</Button>
+                </Box>
               </Box>
             )}
 
@@ -169,16 +168,14 @@ const Navbar = () => {
               />
             </ListItem>
           ))}
-          {/* <Box sx={{ p: 2, textAlign: "center" }}>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              sx={{ borderRadius: "50px" }}
-            >
-              Join Event
+          <Box sx={{ p: 2, display: 'flex', gap: 1, flexDirection: 'column', alignItems: 'center' }}>
+            <Button component={Link} to="/signin" fullWidth color="inherit" onClick={handleDrawerToggle}>
+              Sign In
             </Button>
-          </Box> */}
+            <Button component={Link} to="/signup" fullWidth variant="contained" color="primary" sx={{ borderRadius: '50px' }} onClick={handleDrawerToggle}>
+              Sign Up
+            </Button>
+          </Box>
         </List>
       </Drawer>
     </>
