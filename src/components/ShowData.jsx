@@ -13,7 +13,7 @@ const ShowData = () => {
     // Auth listener
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setShow(user?.email === 'awaisqarnikhan876@gmail.com');
+            setShow(user?.email === 'qarniff1122@gmail.com');
         });
 
         return () => unsubscribe();
