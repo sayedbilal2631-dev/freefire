@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { alpha, createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
@@ -132,4 +132,40 @@ const theme = createTheme({
   },
 });
 
+export const inputStyles = {
+  '& .MuiOutlinedInput-root': {
+    backgroundColor: alpha(theme.palette.background.paper, 0.4),
+    WebkitBackdropFilter: 'blur(10px)',
+    backdropFilter: 'blur(10px)',
+    transition: 'all 0.3s ease',
+    borderRadius: '12px',
+    '& fieldset': {
+      borderColor: alpha(theme.palette.primary.main, 0.2),
+      borderWidth: '1.5px',
+    },
+    '&:hover fieldset': {
+      borderColor: alpha(theme.palette.primary.main, 0.5),
+    },
+    '&.Mui-focused': {
+      backgroundColor: alpha(theme.palette.background.paper, 0.6),
+      '& fieldset': {
+        borderColor: theme.palette.primary.main,
+        boxShadow: `0 0 15px ${alpha(theme.palette.primary.main, 0.3)}`,
+      },
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: alpha(theme.palette.text.primary, 0.7),
+    '&.Mui-focused': {
+      color: theme.palette.primary.main,
+    },
+  },
+  '& .MuiInputAdornment-root .MuiSvgIcon-root': {
+    color: alpha(theme.palette.text.primary, 0.5),
+    transition: 'color 0.3s ease',
+  },
+  '& .Mui-focused .MuiInputAdornment-root .MuiSvgIcon-root': {
+    color: theme.palette.primary.main,
+  },
+};
 export default theme;
