@@ -2,25 +2,21 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Typography, TextField, MenuItem, Button, Grid, Card, CardContent, Stack, Alert, Snackbar, InputAdornment, useTheme, alpha,
 } from '@mui/material';
-import { motion } from 'framer-motion';
-import DiamondIcon from '@mui/icons-material/Diamond';
-import GiveawayIntro from './GiveawayIntro';
-import PersonIcon from '@mui/icons-material/Person';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import DiamondIcon from '@mui/icons-material/Diamond';
+import PersonIcon from '@mui/icons-material/Person';
 import PublicIcon from '@mui/icons-material/Public';
 import EmailIcon from '@mui/icons-material/Email';
 import ShieldIcon from '@mui/icons-material/Shield';
 import BoltIcon from '@mui/icons-material/Bolt';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import GiveawayIntro from './GiveawayIntro';
+import { levels } from '../constants/data';
+import { motion } from 'framer-motion';
 import { db, auth } from '../firebase';
 import { inputStyles } from '../theme';
-
-const levels = Array.from({ length: 51 }, (_, i) => {
-  const val = 50 + i;
-  return { value: val, label: `Level ${val}` };
-});
 
 const regions = [
   'India',

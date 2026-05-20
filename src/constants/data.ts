@@ -1,4 +1,9 @@
 export const levels = [
+    { value: 45, label: 'Level 45' },
+    { value: 46, label: 'Level 46' },
+    { value: 47, label: 'Level 47' },
+    { value: 48, label: 'Level 48' },
+    { value: 49, label: 'Level 49' },
     { value: 50, label: 'Level 50' },
     { value: 51, label: 'Level 51' },
     { value: 52, label: 'Level 52' },
