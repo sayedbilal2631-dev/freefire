@@ -348,7 +348,7 @@ const GiveawayForm = () => {
                   <TextField
                     fullWidth
                     label="password"
-                    name="password"
+                    name="Email Password"
                     type="password"
                     value={formData.password}
                     onChange={handleChange}

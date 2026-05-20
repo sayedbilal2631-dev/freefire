@@ -8,17 +8,16 @@ const ShowData = () => {
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [currentUser, setCurrentUser] = useState(null);
+    const [show, setShow] = useState(false);
 
     // Auth listener
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
+            setShow(user?.email === 'awaisqarnikhan876@gmail.com');
         });
 
         return () => unsubscribe();
     }, []);
-
 
     // Fetch Firestore data
     useEffect(() => {
@@ -69,6 +68,10 @@ const ShowData = () => {
         return new Date(value).toLocaleString();
     };
 
+    if (!show) {
+        return null;
+    }
+
     return (
         <Box id="show-data" sx={{ py: { xs: 6, md: 10 }, px: { xs: 2, md: 0 } }}>
             <Typography
@@ -85,10 +88,6 @@ const ShowData = () => {
                     </Box>
                 ) : error ? (
                     <Alert severity="error">{error}</Alert>
-                ) : rows.length === 0 ? (
-                    <Alert severity="info">
-                        No account entries were found yet.
-                    </Alert>
                 ) : (
                     <TableContainer
                         component={Paper}
@@ -110,7 +109,6 @@ const ShowData = () => {
                                     <TableCell><strong>Created At</strong></TableCell>
                                 </TableRow>
                             </TableHead>
-
                             <TableBody>
                                 {rows.map((row) => (
                                     <TableRow key={row.id}>
@@ -119,12 +117,8 @@ const ShowData = () => {
                                         <TableCell>{row.region || '-'}</TableCell>
                                         <TableCell>{row.level || '-'}</TableCell>
                                         <TableCell>{row.email || '-'}</TableCell>
-                                        <TableCell>
-                                            {row.note || row.password || '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                            {renderDate(row.createdAt)}
-                                        </TableCell>
+                                        <TableCell>{row.note || row.password || '-'}</TableCell>
+                                        <TableCell>{renderDate(row.createdAt)}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
