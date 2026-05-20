@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -23,7 +23,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
+  const navigate = useNavigate()
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -42,7 +42,9 @@ const Navbar = () => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
+  const handle = () => {
+    navigate('/')
+  }
   return (
     <>
       <AppBar
@@ -67,13 +69,13 @@ const Navbar = () => {
               alignItems: 'center'
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box onClick={handle} sx={{ display: "flex", alignItems: "center", gap: 1, cursor: 'pointer' }}>
               {/* <SportsEsportsIcon sx={{ color: 'primary.main', fontSize: 32 }} /> */}
               <Box
                 component="img"
                 src="/images/gareena_logo.svg"
                 alt="Free Fire Logo"
-                sx={{ width: 30, height: 30 }}
+                sx={{ width: 30, height: 30, }}
               />
               <Typography
                 variant="h6"
