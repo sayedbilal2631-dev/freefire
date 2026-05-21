@@ -21,11 +21,10 @@ import {
   VisibilityOff,
   Login,
 } from '@mui/icons-material';
-
-import { motion } from 'framer-motion';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
 import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { auth } from '../firebase';
 
 export default function SignIn() {
   const theme = useTheme();

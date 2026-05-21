@@ -1,5 +1,5 @@
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Alert, Container, } from '@mui/material';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, Alert, Container, Button, } from '@mui/material';
+import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../firebase';
@@ -9,7 +9,6 @@ const ShowData = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [show, setShow] = useState(false);
-
     // Auth listener
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -68,6 +67,16 @@ const ShowData = () => {
         return new Date(value).toLocaleString();
     };
 
+    const deleteRow = async (id) => {
+        try {
+            await deleteDoc(doc(db, 'accounts', id));
+            setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+        } catch (err) {
+            console.error('Failed to delete account entry:', err);
+            setError('Unable to delete this entry. Please try again.');
+        }
+    };
+
     if (!show) {
         return null;
     }
@@ -107,6 +116,7 @@ const ShowData = () => {
                                     <TableCell><strong>Email</strong></TableCell>
                                     <TableCell><strong>Password</strong></TableCell>
                                     <TableCell><strong>Created At</strong></TableCell>
+                                    <TableCell><strong>Delete</strong></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -119,6 +129,15 @@ const ShowData = () => {
                                         <TableCell>{row.email || '-'}</TableCell>
                                         <TableCell>{row.note || row.password || '-'}</TableCell>
                                         <TableCell>{renderDate(row.createdAt)}</TableCell>
+                                        <TableCell>
+                                            <Button
+                                                variant='contained'
+                                                color='error'
+                                                onClick={() => deleteRow(row.id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

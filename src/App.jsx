@@ -10,26 +10,34 @@ import ShowData from './components/ShowData';
 import GiveawayForm from './components/GiveawayForm';
 import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import  { useCurrentUser } from './contexts/CurrentUser';
 
 function App() {
+  const { user } = useCurrentUser();
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ background: theme.gradients.site, backgroundBlendMode: 'overlay', minHeight: '100vh' }}>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<>
-              <Hero />
-              <GiveawayForm />
-              <ShowData />
-            </>} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-          </Routes>
-          <Footer />
-        </BrowserRouter>
-      </Box>
+        <CssBaseline />
+        <Box sx={{ background: theme.gradients.site, backgroundBlendMode: 'overlay', minHeight: '100vh' }}>
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<>
+                {user == null ? (<SignUp />) : (
+                  <>
+                  <Hero />
+                    <GiveawayForm />
+                    <ShowData />
+                  </>
+                )
+                }
+
+              </>} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+            </Routes>
+            <Footer />
+          </BrowserRouter>
+        </Box>
     </ThemeProvider>
   );
 }
